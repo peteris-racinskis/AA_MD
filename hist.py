@@ -40,7 +40,7 @@ if __name__ == "__main__":
     smoothed = histogram_smoothing(img)
     cv2.imshow("original in grayscale", img)
     cv2.imshow("smoothed", smoothed)
-    cv2.waitKey(50)
+    cv2.waitKey(50) # required so the images have time to be shown
     draw_histogram(img, smoothed)
     cv2.destroyAllWindows()
     cv2.imwrite("{}_smoothed.bmp".format(path.stem), smoothed)
