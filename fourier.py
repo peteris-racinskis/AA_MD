@@ -104,5 +104,5 @@ if __name__ == "__main__":
     cv2.imshow("inv", pixels(inv, True))
     cv2.imshow("filtered", pixels(filtered))
     cv2.imshow("inv filtered", pixels(inv_filtered, True))
-    cv2.waitKey(0) # required so the images have time to be shown
+    cv2.waitKey(0)
     cv2.destroyAllWindows()

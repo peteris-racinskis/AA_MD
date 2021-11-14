@@ -76,5 +76,5 @@ if __name__ == "__main__":
     print(t1-t0)
     cv2.imshow("original in grayscale", img)
     cv2.imshow("blurred", blurred)
-    cv2.waitKey(0) # required so the images have time to be shown
+    cv2.waitKey(0)
     cv2.destroyAllWindows()
