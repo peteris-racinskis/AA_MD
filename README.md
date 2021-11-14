@@ -26,3 +26,19 @@ $ python3 gauss.py flower.jpg fast
 $ python3 gauss.py flower.jpg 15
 $ python3 gauss.py flower.jpg 15 fast
 ```
+
+
+## Fourier
+Fourier transform and low pass filter on a grayscale version of the image. Default image - flower.jpg, inclued. Saves the grayscale version, fourier transform, filtered transform, inverse of the transform and inverse of the filtered transform in the fourier/ folder.
+
+Takes optional arguments - filename, filter radius, "fast". When running with the "fast" argument, OpenCV's implementation of FFT is used, which is around 30 times faster. Otherwise a straightforward implementation of the DFT algorithm (using matrix multiplication) written by me is used. The lowpass filter is a simple radial distance threshold mask applied to the transform.
+
+Usage
+
+```
+$ python3 fourier.py
+$ python3 fourier.py flower.jpg
+$ python3 fourier.py flower.jpg fast
+$ python3 fourier.py flower.jpg 40
+$ python3 fourier.py flower.jpg 40 fast
+```

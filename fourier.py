@@ -40,6 +40,8 @@ def inverse_shifted(mat: np.ndarray) -> np.ndarray:
 def pixels(mat: np.ndarray, inverse=False) -> np.ndarray:
     return (20 * np.log(np.abs(mat)+1) if not inverse else mat).astype(np.dtype('uint8'))
 
+# convolution in the space domain is elementwise multiplication
+# in the spatial frequency domain.
 def convolve(img: np.ndarray, mask: np.ndarray):
     return img * mask
 
@@ -55,7 +57,7 @@ def ft_slow(img: np.ndarray) -> np.ndarray:
     return shifted
 
 # np.fft has a fftshift function to relocate the corners to the center
-# I wrote my own to show that I understand what's happening.
+# I wrote my own to show that I understand what it's doing.
 def ft_shift_slow(img: np.ndarray, inverse=False) -> np.ndarray:
     s = -1 if inverse else 1
     M, N = img.shape
