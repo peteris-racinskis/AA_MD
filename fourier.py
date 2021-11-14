@@ -45,23 +45,23 @@ def convolve(img: np.ndarray, mask: np.ndarray):
 
 def ft_fast(img: np.ndarray) -> np.ndarray:
     dft = cv2.dft(img.astype(np.float), flags=cv2.DFT_COMPLEX_OUTPUT)
-    shifted = ft_shift_fast(dft)
-    shifted_complex = shifted[...,0] + 1j * shifted[...,1]
-    return shifted_complex
-
-def ft_shift_fast(img: np.ndarray):
-    return np.fft.fftshift(img)
+    dft_complex = dft[...,0] + 1j * dft[...,1]
+    shifted = ft_shift_slow(dft_complex)
+    return shifted
 
 def ft_slow(img: np.ndarray) -> np.ndarray:
     dft = dft_matrix(img)
     shifted = ft_shift_slow(dft)
     return shifted
 
+# np.fft has a fftshift function to relocate the corners to the center
+# I wrote my own to show that I understand what's happening.
 def ft_shift_slow(img: np.ndarray, inverse=False) -> np.ndarray:
     s = -1 if inverse else 1
     M, N = img.shape
     return np.roll(img, (s * M // 2, s * N // 2), (0,1))
 
+# Make everything outside the radius = 0
 def lowpass_filter(shape, radius):
     N, M = shape
     mrange = np.concatenate((np.arange((-M // 2) + 1, 1, 1), np.arange(M % 2, M // 2, 1)))
@@ -73,13 +73,13 @@ def lowpass_filter(shape, radius):
 if __name__ == "__main__":
 
     path = Path(argv[1] if len(argv) > 1 else FILENAME)
-    radius = int(argv[2]) if len(argv) > 2 and argv[2].isdigit() else 3
+    radius = int(argv[2]) if len(argv) > 2 and argv[2].isdigit() else 20
     fast = "fast" in argv
 
     img = cv2.imread(path.as_posix(), flags=cv2.IMREAD_GRAYSCALE)
     N, M = img.shape
     cv2.imwrite("fourier/{}_original.bmp".format(path.stem), img)
-    mask = lowpass_filter(img.shape, 20)
+    mask = lowpass_filter(img.shape, radius)
 
     t0 = time.time()
     if not fast:
