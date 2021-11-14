@@ -3,7 +3,6 @@ import math
 import numpy as np
 from pathlib import Path
 from sys import argv
-from typing import Tuple
 import time
 FILENAME="flower.jpg"
 
@@ -16,39 +15,39 @@ FILENAME="flower.jpg"
 # Fmn - original image or transform
 # Bnk - coefficient matrix (step 1)
 # Cml - coefficient matrix (step 2)
-# Pmk - intermediate result (one axis fourier)
-# Pkm - transposed above
 # Fkl - final result (or restored image)
-# Fkl = (Fmn*Bnk)^T*Cml
+# Fkl = Bkn*Fmn*Cml
 # The equations were taken from:
 # https://homepages.inf.ed.ac.uk/rbf/HIPR2/fourier.htm
 # The matrix form I derived myself though I am certain
 # there are materials out there describing it - it's the
-# obvious way to implement this algorithm if fast matrix
+# obvious way to express this algorithm if fast matrix
 # multiplication tools are available.
 def dft_matrix(img: np.ndarray, inverse=False) -> np.ndarray:
     sign = 1 if inverse else -1
-    if inverse:
-        Fmn = img[...,0] + 1j * img[...,1]
-    else:
-        Fmn =  img.astype(dtype='complex')
+    Fmn = img.astype(dtype='complex')
     N, M = Fmn.shape
     k, n = np.meshgrid(np.arange(0,N,1), np.arange(0,N,1))
     l, m = np.meshgrid(np.arange(0,M,1), np.arange(0,M,1))
-    Bnk = np.cos((sign / N) * (2 * math.pi * n * k)) + 1j * np.sin((sign / N) * (2 * math.pi * n * k))
+    Bkn = np.cos((sign / N) * (2 * math.pi * n * k)) + 1j * np.sin((sign / N) * (2 * math.pi * n * k))
     Cml = np.cos((sign / M) * (2 * math.pi * m * l)) + 1j * np.sin((sign / M) * (2 * math.pi * m * l))
-    Pkm = (Fmn.T @ Bnk).T
-    Fkl = Pkm @ Cml
+    Fkl = Bkn @ Fmn @ Cml
     return np.abs(Fkl) / (N * M) if inverse else Fkl
 
-def convolve(img: np.ndarray, mask: np.ndarray):
-    pass
+def inverse_shifted(mat: np.ndarray) -> np.ndarray:
+    return dft_matrix(ft_shift_slow(mat, inverse=True), inverse=True)
 
-def ft_fast(img: np.ndarray):
+def pixels(mat: np.ndarray, inverse=False) -> np.ndarray:
+    return (20 * np.log(np.abs(mat)+1) if not inverse else mat).astype(np.dtype('uint8'))
+
+def convolve(img: np.ndarray, mask: np.ndarray):
+    return img * mask
+
+def ft_fast(img: np.ndarray) -> np.ndarray:
     dft = cv2.dft(img.astype(np.float), flags=cv2.DFT_COMPLEX_OUTPUT)
     shifted = ft_shift_fast(dft)
-    dft_mag: np.ndarray = 20 * np.log(cv2.magnitude(shifted[...,0],shifted[...,1])+1)
-    return dft_mag.astype(np.dtype('uint8'))
+    shifted_complex = shifted[...,0] + 1j * shifted[...,1]
+    return shifted_complex
 
 def ft_shift_fast(img: np.ndarray):
     return np.fft.fftshift(img)
@@ -56,28 +55,54 @@ def ft_shift_fast(img: np.ndarray):
 def ft_slow(img: np.ndarray) -> np.ndarray:
     dft = dft_matrix(img)
     shifted = ft_shift_slow(dft)
-    dft_mag: np.ndarray = 20 * np.log(np.abs(shifted)+1)
-    return dft_mag.astype(np.dtype('uint8'))# inverse.astype(np.dtype('uint8'))
+    return shifted
 
-def ft_shift_slow(img: np.ndarray) -> np.ndarray:
+def ft_shift_slow(img: np.ndarray, inverse=False) -> np.ndarray:
+    s = -1 if inverse else 1
     M, N = img.shape
-    return np.roll(img, (M // 2, N // 2), (0,1))
+    return np.roll(img, (s * M // 2, s * N // 2), (0,1))
 
+def lowpass_filter(shape, radius):
+    N, M = shape
+    mrange = np.concatenate((np.arange((-M // 2) + 1, 1, 1), np.arange(M % 2, M // 2, 1)))
+    nrange = np.concatenate((np.arange((-N // 2) + 1, 1, 1), np.arange(N % 2, N // 2, 1)))
+    mdist, ndist = np.meshgrid(mrange, nrange)
+    cutoff = mdist ** 2 + ndist ** 2 <= radius ** 2
+    return cutoff
 
 if __name__ == "__main__":
+
     path = Path(argv[1] if len(argv) > 1 else FILENAME)
+    radius = int(argv[2]) if len(argv) > 2 and argv[2].isdigit() else 3
+    fast = "fast" in argv
+
     img = cv2.imread(path.as_posix(), flags=cv2.IMREAD_GRAYSCALE)
-    cv2.imwrite("{}_orig.bmp".format(path.stem), img)
+    N, M = img.shape
+    cv2.imwrite("fourier/{}_original.bmp".format(path.stem), img)
+    mask = lowpass_filter(img.shape, 20)
+
     t0 = time.time()
-    freq = ft_slow(img)
+    if not fast:
+        raw = ft_slow(img)
+        speed = "slow"
+    else:
+        raw = ft_fast(img)
+        speed = "fast"
     t1 = time.time()
-    freq_fast: np.ndarray = ft_fast(img)
-    t2 = time.time()
-    print("slow: {}".format(t1-t0))
-    print("fast: {}".format(t2-t1))
+    print("time: {}".format(t1-t0))
+    inv = inverse_shifted(raw)
+    filtered = convolve(raw, mask)
+    inv_filtered = inverse_shifted(filtered)
+
+    cv2.imwrite("fourier/{}_transform-{}.bmp".format(path.stem, speed), pixels(raw))
+    cv2.imwrite("fourier/{}_transform-filtered-{}.bmp".format(path.stem, speed), pixels(filtered))
+    cv2.imwrite("fourier/{}_restored-{}.bmp".format(path.stem, speed), pixels(inv, True))
+    cv2.imwrite("fourier/{}_restored-filtered-{}.bmp".format(path.stem, speed), pixels(inv_filtered, True))
+    
     cv2.imshow("original in grayscale", img)
-    cv2.imshow("freq", freq)
-    #cv2.imshow("inv", inv)
-    cv2.imshow("freq fast", freq_fast)
+    cv2.imshow("freq", pixels(raw))
+    cv2.imshow("inv", pixels(inv, True))
+    cv2.imshow("filtered", pixels(filtered))
+    cv2.imshow("inv filtered", pixels(inv_filtered, True))
     cv2.waitKey(0) # required so the images have time to be shown
     cv2.destroyAllWindows()

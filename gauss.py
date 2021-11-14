@@ -63,15 +63,15 @@ if __name__ == "__main__":
     radius = int(argv[2]) if len(argv) > 2 and argv[2].isdigit() else 3
     fast = "fast" in argv
     img = cv2.imread(path.as_posix(), flags=cv2.IMREAD_GRAYSCALE)
-    cv2.imwrite("{}_orig.bmp".format(path.stem), img)
+    cv2.imwrite("gauss/{}_original.bmp".format(path.stem), img)
     kernel = generate_kernel(radius, radius / 3)
     t0 = time.time()
     if not fast:
         blurred = gauss_blur_slow(img, kernel)
-        cv2.imwrite("{}_blurred-slow.bmp".format(path.stem), blurred)
+        cv2.imwrite("gauss/{}_blurred-slow.bmp".format(path.stem), blurred)
     else:
         blurred = gauss_blur_fast(img, kernel)
-        cv2.imwrite("{}_blurred-fast.bmp".format(path.stem), blurred)
+        cv2.imwrite("gauss/{}_blurred-fast.bmp".format(path.stem), blurred)
     t1 = time.time()
     print(t1-t0)
     cv2.imshow("original in grayscale", img)

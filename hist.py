@@ -45,11 +45,11 @@ def draw_histogram(img, img2):
 if __name__ == "__main__":
     path = Path(argv[1] if len(argv) > 1 else FILENAME)
     img = cv2.imread(path.as_posix(), flags=cv2.IMREAD_GRAYSCALE)
-    cv2.imwrite("{}_orig.bmp".format(path.stem), img)
+    cv2.imwrite("histogram/{}_original.bmp".format(path.stem), img)
     smoothed = histogram_smoothing(img)
     cv2.imshow("original in grayscale", img)
     cv2.imshow("smoothed", smoothed)
     cv2.waitKey(50) # required so the images have time to be shown
     draw_histogram(img, smoothed)
     cv2.destroyAllWindows()
-    cv2.imwrite("{}_smoothed.bmp".format(path.stem), smoothed)
+    cv2.imwrite("histogram/{}_smoothed.bmp".format(path.stem), smoothed)
