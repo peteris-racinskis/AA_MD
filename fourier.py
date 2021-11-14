@@ -76,6 +76,7 @@ if __name__ == "__main__":
     radius = int(argv[2]) if len(argv) > 2 and argv[2].isdigit() else 20
     fast = "fast" in argv
 
+    speed = "fast" if fast else "slow"
     img = cv2.imread(path.as_posix(), flags=cv2.IMREAD_GRAYSCALE)
     N, M = img.shape
     cv2.imwrite("fourier/{}_original.bmp".format(path.stem), img)
@@ -84,10 +85,8 @@ if __name__ == "__main__":
     t0 = time.time()
     if not fast:
         raw = ft_slow(img)
-        speed = "slow"
     else:
         raw = ft_fast(img)
-        speed = "fast"
     t1 = time.time()
     print("time: {}".format(t1-t0))
     inv = inverse_shifted(raw)
