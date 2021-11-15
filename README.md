@@ -1,5 +1,9 @@
 # AA_MD
-Homework assignments in image processing. Written in Python 3.8.5+, using opencv, matplotlib and numpy. Developed on linux but tested on windows 10.
+Homework assignments in image processing. Written in Python 3.8.5+, using opencv-pytho, matplotlib and numpy. Developed on linux but tested on Windows 10, with:
+- Python 3.8.10
+- opencv-python 4.5.4.58
+- matplotlib 3.4.3
+- numpy 1.21.4
 
 Working with color opens up a whole lot of new problems due to the complexity of conserving proper mappings between the various representation spaces so everything in this repository works on grayscale versions of the input image.
 
