@@ -1,5 +1,5 @@
 # AA_MD
-Homework assignments in image processing. Written in Python 3.8.5+, using opencv-pytho, matplotlib and numpy. Developed on linux but tested on Windows 10, with:
+Homework assignments in image processing. Written in Python 3.8.5+, using opencv-python, matplotlib and numpy. Developed on linux but tested on Windows 10, with:
 - Python 3.8.10
 - opencv-python 4.5.4.58
 - matplotlib 3.4.3
