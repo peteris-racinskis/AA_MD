@@ -34,31 +34,6 @@ def dft_matrix(img: np.ndarray, inverse=False) -> np.ndarray:
     Fkl = Bkn @ Fmn @ Cml
     return np.abs(Fkl) / (N * M) if inverse else Fkl
 
-def inverse_shifted(mat: np.ndarray) -> np.ndarray:
-    return dft_matrix(ft_shift_slow(mat, inverse=True), inverse=True)
-
-def pixels(mat: np.ndarray, inverse=False) -> np.ndarray:
-    return (20 * np.log(np.abs(mat)+1) if not inverse else mat).astype(np.dtype('uint8'))
-
-# convolution in the space domain is elementwise multiplication
-# in the spatial frequency domain.
-def convolve_transforms(img: np.ndarray, mask: np.ndarray):
-    return img * mask
-
-def ft_fast(img: np.ndarray) -> np.ndarray:
-    # Could also use CV2's implementation - returns complex numbers as
-    # arrays rather than tuples
-    #dft = cv2.dft(img.astype(np.float), flags=cv2.DFT_COMPLEX_OUTPUT)
-    #dft_complex = dft[...,0] + 1j * dft[...,1]
-    dft_complex = np.fft.fft2(img)
-    shifted = ft_shift_slow(dft_complex)
-    return shifted
-
-def ift_fast(img: np.ndarray, shifted=True) -> np.ndarray:
-    ft = ft_shift_slow(img, inverse=True) if shifted else img
-    ift = np.fft.ifft2(ft)
-    return np.abs(ift)
-
 def ft_slow(img: np.ndarray) -> np.ndarray:
     dft = dft_matrix(img)
     shifted = ft_shift_slow(dft)
@@ -70,6 +45,28 @@ def ft_shift_slow(img: np.ndarray, inverse=False) -> np.ndarray:
     s = -1 if inverse else 1
     M, N = img.shape
     return np.roll(img, (s * M // 2, s * N // 2), (0,1))
+
+def inverse_shifted(mat: np.ndarray) -> np.ndarray:
+    return dft_matrix(ft_shift_slow(mat, inverse=True), inverse=True)
+
+def pixels(mat: np.ndarray, inverse=False) -> np.ndarray:
+    return (20 * np.log(np.abs(mat)+1) if not inverse else mat).astype(np.dtype('uint8'))
+
+# convolution in the space domain is elementwise multiplication
+# in the spatial frequency domain.
+def convolve_transforms(img: np.ndarray, mask: np.ndarray):
+    return img * mask
+
+# Use numpy's implementation of the FFT algorithm
+def ft_fast(img: np.ndarray) -> np.ndarray:
+    dft_complex = np.fft.fft2(img)
+    shifted = ft_shift_slow(dft_complex)
+    return shifted
+
+def ift_fast(img: np.ndarray, shifted=True) -> np.ndarray:
+    ft = ft_shift_slow(img, inverse=True) if shifted else img
+    ift = np.fft.ifft2(ft)
+    return np.abs(ift)
 
 # Make everything outside the radius = 0
 def lowpass_filter(shape, radius):
@@ -95,13 +92,17 @@ if __name__ == "__main__":
     t0 = time.time()
     if not fast:
         raw = ft_slow(img)
+        t1 = time.time()
+        inv = inverse_shifted(raw)
+        filtered = convolve_transforms(raw, mask)
+        inv_filtered = inverse_shifted(filtered)
     else:
         raw = ft_fast(img)
-    t1 = time.time()
+        t1 = time.time()
+        inv = ift_fast(raw, shifted=True)
+        filtered = convolve_transforms(raw, mask)
+        inv_filtered = ift_fast(filtered, shifted=True)
     print("time: {}".format(t1-t0))
-    inv = inverse_shifted(raw)
-    filtered = convolve_transforms(raw, mask)
-    inv_filtered = inverse_shifted(filtered)
 
     cv2.imwrite("fourier/{}_transform-{}.bmp".format(path.stem, speed), pixels(raw))
     cv2.imwrite("fourier/{}_transform-filtered-{}.bmp".format(path.stem, speed), pixels(filtered))
