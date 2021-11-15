@@ -42,14 +42,22 @@ def pixels(mat: np.ndarray, inverse=False) -> np.ndarray:
 
 # convolution in the space domain is elementwise multiplication
 # in the spatial frequency domain.
-def convolve(img: np.ndarray, mask: np.ndarray):
+def convolve_transforms(img: np.ndarray, mask: np.ndarray):
     return img * mask
 
 def ft_fast(img: np.ndarray) -> np.ndarray:
-    dft = cv2.dft(img.astype(np.float), flags=cv2.DFT_COMPLEX_OUTPUT)
-    dft_complex = dft[...,0] + 1j * dft[...,1]
+    # Could also use CV2's implementation - returns complex numbers as
+    # arrays rather than tuples
+    #dft = cv2.dft(img.astype(np.float), flags=cv2.DFT_COMPLEX_OUTPUT)
+    #dft_complex = dft[...,0] + 1j * dft[...,1]
+    dft_complex = np.fft.fft2(img)
     shifted = ft_shift_slow(dft_complex)
     return shifted
+
+def ift_fast(img: np.ndarray, shifted=True) -> np.ndarray:
+    ft = ft_shift_slow(img, inverse=True) if shifted else img
+    ift = np.fft.ifft2(ft)
+    return np.abs(ift)
 
 def ft_slow(img: np.ndarray) -> np.ndarray:
     dft = dft_matrix(img)
@@ -92,8 +100,9 @@ if __name__ == "__main__":
     t1 = time.time()
     print("time: {}".format(t1-t0))
     inv = inverse_shifted(raw)
-    filtered = convolve(raw, mask)
+    filtered = convolve_transforms(raw, mask)
     inv_filtered = inverse_shifted(filtered)
+    test = ift_fast(raw)
 
     cv2.imwrite("fourier/{}_transform-{}.bmp".format(path.stem, speed), pixels(raw))
     cv2.imwrite("fourier/{}_transform-filtered-{}.bmp".format(path.stem, speed), pixels(filtered))
@@ -105,5 +114,6 @@ if __name__ == "__main__":
     cv2.imshow("inv", pixels(inv, True))
     cv2.imshow("filtered", pixels(filtered))
     cv2.imshow("inv filtered", pixels(inv_filtered, True))
+    cv2.imshow("test", pixels(test, True))
     cv2.waitKey(0)
     cv2.destroyAllWindows()
