@@ -102,7 +102,6 @@ if __name__ == "__main__":
     inv = inverse_shifted(raw)
     filtered = convolve_transforms(raw, mask)
     inv_filtered = inverse_shifted(filtered)
-    test = ift_fast(raw)
 
     cv2.imwrite("fourier/{}_transform-{}.bmp".format(path.stem, speed), pixels(raw))
     cv2.imwrite("fourier/{}_transform-filtered-{}.bmp".format(path.stem, speed), pixels(filtered))
@@ -114,6 +113,5 @@ if __name__ == "__main__":
     cv2.imshow("inv", pixels(inv, True))
     cv2.imshow("filtered", pixels(filtered))
     cv2.imshow("inv filtered", pixels(inv_filtered, True))
-    cv2.imshow("test", pixels(test, True))
     cv2.waitKey(0)
     cv2.destroyAllWindows()
