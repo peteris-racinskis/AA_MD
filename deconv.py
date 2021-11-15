@@ -1,6 +1,7 @@
 from fourier import *
 
 def motion_blur_psf(img: np.ndarray) -> np.ndarray:
+    
     pass
 
 def gaussian_psf(img: np.ndarray) -> np.ndarray:
