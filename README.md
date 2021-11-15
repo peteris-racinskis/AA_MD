@@ -1,5 +1,7 @@
 # AA_MD
-Homework assignments in image processing. Written in Python 3.8.5+, using opencv, matplotlib and numpy
+Homework assignments in image processing. Written in Python 3.8.5+, using opencv, matplotlib and numpy. Developed on linux but tested on windows 10.
+
+Working with color opens up a whole lot of new problems due to the complexity of conserving proper mappings between the various representation spaces so everything in this repository works on grayscale versions of the input image.
 
 ## Histogram
 Apply histogram smoothing to an 8-bit grayscale version of the image. Default image - flower.jpg, inclued. Saves the grayscale and smoothed versions of the image in bitmap format in the histogram/ directory, displays both images and their respective histograms. Close the histogram window to terminate execution.
@@ -41,4 +43,17 @@ $ python3 fourier.py flower.jpg
 $ python3 fourier.py flower.jpg fast
 $ python3 fourier.py flower.jpg 40
 $ python3 fourier.py flower.jpg 40 fast
+```
+
+## Bilinear
+Upscale a grayscale version of the image using bilinear interpolation. Default image - flower.jpg, inclued. Saves the grayscale version and upscaled in the bilinear/ directory.
+
+Takes optional arguments - filename, scale. Scale needs to be an integer and greater than 1, the default value is 4. 
+
+Usage
+
+```
+$ python3 bilinear.py
+$ python3 bilinear.py flower.jpg
+$ python3 bilinear.py flower.jpg 2
 ```
