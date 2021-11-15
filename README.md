@@ -35,7 +35,7 @@ $ python3 gauss.py flower.jpg 15 fast
 
 
 ## Fourier
-Fourier transform and low pass filter on a grayscale version of the image. Default image - flower.jpg, inclued. Saves the grayscale version, fourier transform, filtered transform, inverse of the transform and inverse of the filtered transform in the fourier/ directory.
+Fourier transform and low pass filter on a grayscale version of the image. Default image - flower.jpg, inclued. Saves the grayscale version, fourier transform, filtered transform, inverse of the transform and inverse of the filtered transform in the fourier/ directory. Press any key to terminate execution.
 
 Takes optional arguments - filename, filter radius, "fast". When running with the "fast" argument, OpenCV's implementation of FFT is used, which is around 30 times faster for the example image. Otherwise a straightforward implementation of the DFT algorithm (using matrix multiplication) written by me is used. The lowpass filter is a simple radial distance threshold mask applied to the transform.
 
@@ -50,7 +50,7 @@ $ python3 fourier.py flower.jpg 40 fast
 ```
 
 ## Bilinear
-Upscale a grayscale version of the image using bilinear interpolation. Default image - flower.jpg, inclued. Saves the grayscale version and upscaled in the bilinear/ directory.
+Upscale a grayscale version of the image using bilinear interpolation. Default image - flower.jpg, inclued. Saves the grayscale version and upscaled in the bilinear/ directory. Press any key to terminate execution.
 
 Takes optional arguments - filename, scale. Scale needs to be an integer and greater than 1, the default value is 4. 
 
