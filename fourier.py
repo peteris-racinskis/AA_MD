@@ -44,7 +44,7 @@ def ft_slow(img: np.ndarray) -> np.ndarray:
 def ft_shift_slow(img: np.ndarray, inverse=False) -> np.ndarray:
     s = -1 if inverse else 1
     M, N = img.shape
-    return np.roll(img, (s * M // 2, s * N // 2), (0,1))
+    return np.roll(img, (s * (M // 2 + 1), s * (N // 2 + 1)), (0,1))
 
 def inverse_shifted(mat: np.ndarray) -> np.ndarray:
     return dft_matrix(ft_shift_slow(mat, inverse=True), inverse=True)
