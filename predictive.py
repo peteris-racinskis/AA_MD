@@ -6,14 +6,18 @@ from typing import List, Tuple
 from hist import draw_histogram
 FILENAME="flower.jpg"
 
-
+# zero out the previous values for the first row/column as necessary
 def shifted(img: np.ndarray, shifts: List[Tuple]) -> List[np.ndarray]:
     result = []
     for shift in shifts:
-        result.append(np.roll(img, shift, (0,1)))
+        rolled = np.roll(img, shift, (0,1))
+        rolled[0,:] = 0 if shift[0] == 1 else rolled[0,:]
+        rolled[:,0] = 0 if shift[1] == 1 else rolled[:,0]
+        result.append(rolled)
     return result
 
-
+# if you allow 8-bit overflow in this function it doesn't work. cast to system
+# wordlength.
 def diff(base: np.ndarray, values: List[np.ndarray]) -> np.ndarray:
     result = []
     for value in values:
@@ -43,7 +47,7 @@ if __name__ == "__main__":
     path = Path(argv[1] if len(argv) > 1 else FILENAME)
     img = cv2.imread(path.as_posix(), flags=cv2.IMREAD_GRAYSCALE)
     pred = predicted(img)
-    d = deviation(img, pred) + 127
+    d = deviation(img, pred)
     cv2.imshow("original in grayscale", img)
     cv2.imshow("predicted in grayscale", pred)
     cv2.imshow("deviation in grayscale", d)
