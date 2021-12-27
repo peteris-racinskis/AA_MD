@@ -39,6 +39,8 @@ Fourier transform and low pass filter on a grayscale version of the image. Defau
 
 Takes optional arguments - filename, filter radius, "fast". When running with the "fast" argument, OpenCV's implementation of FFT is used, which is around 30 times faster for the example image. Otherwise a straightforward implementation of the DFT algorithm (using matrix multiplication) written by me is used. The lowpass filter is a simple radial distance threshold mask applied to the transform.
 
+NOTE: (12/12/21) fixed roll indexing to use ceiling division by 2 rather than floor. This is correct for even numbered axis lengths and has a shift error of 0.5 rather than 1.5 for odd ones.
+
 Usage
 
 ```
