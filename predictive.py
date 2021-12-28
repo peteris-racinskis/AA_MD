@@ -106,10 +106,10 @@ if __name__ == "__main__":
     print(f"Size of compressed predictive w/t loss:\t{len(c_wtloss)}")
 
     cv2.imwrite("predictive/{}_original.bmp".format(path.stem), img)
-    cv2.imwrite("predictive/{}_enc_noloss.bmp".format(path.stem), img)
-    cv2.imwrite("predictive/{}_enc_wtloss.bmp".format(path.stem), img)
-    cv2.imwrite("predictive/{}_dec_noloss.bmp".format(path.stem), img)
-    cv2.imwrite("predictive/{}_dec_wtloss.bmp".format(path.stem), img)
+    cv2.imwrite("predictive/{}_enc_noloss.bmp".format(path.stem), dc_noloss)
+    cv2.imwrite("predictive/{}_enc_wtloss.bmp".format(path.stem), dc_wtloss)
+    cv2.imwrite("predictive/{}_dec_noloss.bmp".format(path.stem), dec_noloss)
+    cv2.imwrite("predictive/{}_dec_wtloss.bmp".format(path.stem), dec_wtloss)
 
     cv2.imshow("original in grayscale", img)
     cv2.imshow("serial enc in grayscale", dc_noloss + 127)
