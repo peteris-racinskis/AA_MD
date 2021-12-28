@@ -97,9 +97,11 @@ if __name__ == "__main__":
     c_noloss = compress(pred_noloss)
     c_wtloss = compress(pred_wtloss)
     dc_noloss = decompress(c_noloss)
-    dc_wtloss = decompress(c_noloss)
+    dc_wtloss = decompress(c_wtloss)
     dec_noloss = paeth_serial(dc_noloss, decode=True)
     dec_wtloss = paeth_serial(dc_wtloss, decode=True)
+
+    diff = dec_noloss - dec_wtloss
 
     print(f"Size of directly compressed original:\t{len(c_origin)}")
     print(f"Size of compressed predictive w/o loss:\t{len(c_noloss)}")
@@ -110,12 +112,14 @@ if __name__ == "__main__":
     cv2.imwrite("predictive/{}_enc_wtloss.bmp".format(path.stem), dc_wtloss)
     cv2.imwrite("predictive/{}_dec_noloss.bmp".format(path.stem), dec_noloss)
     cv2.imwrite("predictive/{}_dec_wtloss.bmp".format(path.stem), dec_wtloss)
+    cv2.imwrite("predictive/{}_diff_dec.bmp".format(path.stem), diff)
 
     cv2.imshow("original in grayscale", img)
     cv2.imshow("serial enc in grayscale", dc_noloss + 127)
     cv2.imshow("serial enc w loss in grayscale", dc_wtloss + 127)
     cv2.imshow("serial dec in grayscale", dec_noloss)
     cv2.imshow("serial dec w loss in grayscale", dec_wtloss)
+    cv2.imshow("diff between lossy/lossless decoding", diff)
     cv2.waitKey(1000)
     draw_histogram(pred_noloss + 127, pred_wtloss + 127)
     cv2.destroyAllWindows()
