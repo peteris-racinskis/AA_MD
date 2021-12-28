@@ -64,6 +64,19 @@ $ python3 bilinear.py flower.jpg
 $ python3 bilinear.py flower.jpg 2
 ```
 
+## Wavelet
+Produces a Discrete Wavelet Transform of an 8-bit grayscale version of the image using Haar wavelets, applies hard and soft thresholding to the transform for denoising. Looking at the output images it is obvious that hard thresholding is not a feasible approach due to ringing, which is much reduced in the soft threshold case. For a practical implementation, a more complex thresholding approach should be used but soft thresholding was deemed sufficient for this homework application.
+
+Outputs a grayscale version of the original, the DWT normalized for small magnitude components to be visible, an inverse DWT without any thresholding and inverse DWTs with hard and soft thresholding to the wavelet/ directory. Optional argument - input file name. By default takes a version of the flower.jpg image with some RGB noise applied in GIMP flower-noise.jpg.
+
+Press any key with any of the opencv windows selected to terminate program execution.
+
+Usage
+
+```
+$ python3 wavelet.py
+$ python3 wavelet.py flower-noise.jpg
+```
 
 ## Predictive
 Compress an 8-bit grayscale image with predictive coding. Prediction done using the Paeth predictor. Compression done with zlib. Does both lossless and lossy predictive coding with a threshold parameter (default = 10). Outputs a grayscale version of the original, the decompressed predictive codings and the decompressed, decoded final images and their difference to the predictive/ directory. Draws a histogram of the losless and lossy predictive codings. Console output - size of output when compressing respectively: the original image, the lossless predictive encoding, the lossy predictive encoding.

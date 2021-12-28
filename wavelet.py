@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Tuple
 from sys import argv
 from fourier import pixels
-FILENAME="flower.jpg"
+FILENAME="flower-noise.jpg"
 DRAW_DELAY=0
 
 # Forward Haar transform level and wavelet component
@@ -62,14 +62,22 @@ def compose_stage(n, order, inverse=False) -> np.ndarray:
     composed = padded + id
     return composed
 
-# For an order n transform, both axes of the image must divide 2^(n+1)
+# For an order n transform, both axes of the image must be divisible by 2^(n+1)
 # Since all stage matrices are linear transformations, they can be multiplied
 # together to get the transform along one axis.
+# This implementation is based on the 1-dimensional Haar wavelet transform discussed
+# here: http://dsp-book.narod.ru/PWSA/8276_01.pdf 
+# It already gives the matrix equations but for some reason tries to pretend
+# no linear algebra is involved. In any case, I took the liberty of deriving
+# the general case nth step Haar transform matrix as well as the complete
+# form that involves combining these matrices myself. Extending the 1-dimensional
+# case to 2 dimensions was trivial, as was constructing the inverse algorithm.
 def discrete_wavelet_transform(img: np.ndarray, order, inverse=False) -> Tuple[np.ndarray]:
     n, m = img.shape
     Fx = np.identity(n)
     Fy = np.identity(m)
-    # reverse order on inverse pass
+    # reverse order on inverse pass because Matrix multiplication is not
+    # commutative.
     iterator = range(0, order+1) if not inverse else range(order,-1,-1)
     for i in iterator:
         Fx = compose_stage(n, i, inverse) @ Fx
@@ -77,21 +85,44 @@ def discrete_wavelet_transform(img: np.ndarray, order, inverse=False) -> Tuple[n
     result = Fx @ img @ Fy.T
     return result.astype(np.uint8) if inverse else result
 
-def threshold_denoise(img: np.ndarray, threshold) -> np.ndarray:
+
+# Hard threshold. Discontinuities cause ringing.
+def hard_threshold(img: np.ndarray, threshold) -> np.ndarray:
     mask = np.abs(img) > threshold
+    return np.where(mask, img, 0)
+
+# Soft threshold - to remove discontinuities. Not perfect, but cuts
+# down on the ringing immensely. A smarter thresholding method should
+# be used to get rid of it entirely but this is good enough for a proof
+# of concept.
+# Equation from 
+# https://scholarworks.sjsu.edu/cgi/viewcontent.cgi?article=4892&context=etd_theses
+def soft_threshold(img: np.ndarray, threshold) -> np.ndarray:
+    mask = np.abs(img) > threshold
+    img = np.sign(img) * (np.abs(img)-threshold)
     return np.where(mask, img, 0)
 
 
 if __name__ == "__main__":
     path = Path(argv[1] if len(argv) > 1 else FILENAME)
     img = cv2.imread(path.as_posix(), flags=cv2.IMREAD_GRAYSCALE)
+
     haar = discrete_wavelet_transform(img, 3)
-    clipped = threshold_denoise(haar, 20)
+    clipped = hard_threshold(haar, 10)
+    smoothed = soft_threshold(haar, 10)
     pure_inv = discrete_wavelet_transform(haar, 3, inverse=True)
     clip_inv = discrete_wavelet_transform(clipped, 3, inverse=True)
+    soft_inv = discrete_wavelet_transform(smoothed, 3, inverse=True)
+
+    cv2.imwrite("wavelet/{}_original.bmp".format(path.stem), img)
+    cv2.imwrite("wavelet/{}_wavelet_transform.bmp".format(path.stem), pixels(haar))
+    cv2.imwrite("wavelet/{}_restored.bmp".format(path.stem), pure_inv)
+    cv2.imwrite("wavelet/{}_restored-hard-thresh.bmp".format(path.stem), clip_inv)
+    cv2.imwrite("wavelet/{}_restored-soft-thresh.bmp".format(path.stem), soft_inv)
+
     cv2.imshow("original in grayscale", img)
-    cv2.imshow("haar wavelet transform pixels", pixels(haar))
-    cv2.imshow("haar wavelet transform pixels clipped", pixels(clipped))
+    cv2.imshow("haar wavelet transform", pixels(haar))
     cv2.imshow("pure inverse", pure_inv)
     cv2.imshow("clip inverse", clip_inv)
+    cv2.imshow("smooth inverse", soft_inv)
     cv2.waitKey(DRAW_DELAY)
