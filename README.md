@@ -63,3 +63,24 @@ $ python3 bilinear.py
 $ python3 bilinear.py flower.jpg
 $ python3 bilinear.py flower.jpg 2
 ```
+
+
+## Predictive
+Compress an 8-bit grayscale image with predictive coding. Prediction done using the Paeth predictor. Compression done with zlib. Does both lossless and lossy predictive coding with a threshold parameter (default = 10). Outputs a grayscale version of the original, the decompressed predictive codings and the decompressed, decoded final images and their difference to the predictive/ directory. Draws a histogram of the losless and lossy predictive codings. Console output - size of output when compressing respectively: the original image, the lossless predictive encoding, the lossy predictive encoding.
+
+Takes an optional argument - filename. Close the histogram window to terminate program execution. If images aren't geting drawn, increase the DRAW_DELAY constant as it might be system specific.
+
+Usage
+
+```
+$ python3 predictive.py
+$ python3 predictive.py flower.jpg
+```
+
+Output when running with default parameters on my system
+
+```
+Size of directly compressed original:   30374
+Size of compressed predictive w/o loss: 21095
+Size of compressed predictive w/t loss: 7689
+```

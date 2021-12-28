@@ -8,6 +8,8 @@ import zlib
 FILENAME="flower.jpg"
 SIZE_BYTES=4
 SIZE_ORDER='big'
+THRESHOLD=10
+DRAW_DELAY=300
 
 # ripped straight from the PNG format specification at 
 # https://www.w3.org/TR/PNG-Filters.html
@@ -92,7 +94,7 @@ if __name__ == "__main__":
     path = Path(argv[1] if len(argv) > 1 else FILENAME)
     img = cv2.imread(path.as_posix(), flags=cv2.IMREAD_GRAYSCALE)
     pred_noloss = paeth_serial(img)
-    pred_wtloss = paeth_serial(img, thresh=10)
+    pred_wtloss = paeth_serial(img, thresh=THRESHOLD)
     c_origin = compress(img)
     c_noloss = compress(pred_noloss)
     c_wtloss = compress(pred_wtloss)
@@ -120,6 +122,6 @@ if __name__ == "__main__":
     cv2.imshow("serial dec in grayscale", dec_noloss)
     cv2.imshow("serial dec w loss in grayscale", dec_wtloss)
     cv2.imshow("diff between lossy/lossless decoding", diff)
-    cv2.waitKey(1000)
+    cv2.waitKey(DRAW_DELAY)
     draw_histogram(pred_noloss + 127, pred_wtloss + 127)
     cv2.destroyAllWindows()
