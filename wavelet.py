@@ -126,3 +126,4 @@ if __name__ == "__main__":
     cv2.imshow("clip inverse", clip_inv)
     cv2.imshow("smooth inverse", soft_inv)
     cv2.waitKey(DRAW_DELAY)
+    cv2.destroyAllWindows()

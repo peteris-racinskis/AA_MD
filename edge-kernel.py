@@ -82,3 +82,4 @@ if __name__ == "__main__":
     cv2.imshow("sobel horizontal - blur", sobel_y_b)
     cv2.imshow("sobel combined - blur", sobel_cmb_b)
     cv2.waitKey(DRAW_DELAY)
+    cv2.destroyAllWindows()
