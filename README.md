@@ -5,7 +5,7 @@ Homework assignments in image processing. Written in Python 3.8.5+, using opencv
 - matplotlib 3.4.3
 - numpy 1.21.4
 
-Working with color creates a whole lot of new problems due to the complexity of conserving proper mappings between the various representation spaces so everything in this repository works on grayscale versions of the input image unless otherwise specified.
+Working with color creates a number of new problems so everything in this repository works on grayscale versions of the input image unless otherwise specified.
 
 ## Histogram
 Apply histogram smoothing to an 8-bit grayscale version of the image. Default image - flower.jpg, inclued. Saves the grayscale and smoothed versions of the image in bitmap format in the histogram/ directory, displays both images and their respective histograms. Close the histogram window to terminate execution.
