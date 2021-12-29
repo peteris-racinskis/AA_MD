@@ -97,3 +97,20 @@ Size of directly compressed original:   30374
 Size of compressed predictive w/o loss: 21095
 Size of compressed predictive w/t loss: 7689
 ```
+
+## Edge-kernel
+Implement convolution for an 8-bit grayscale version of the image with the Laplace and Sobel kernels for edge detection purposes. Apply Gaussian blur to the original image before edge detection to illustrate the differences between the original and blurred version. Outputs the grayscale original, blurred version, both outputs after convolution with the Laplace kernel and all outputs after convolution with the Sobel kernels - horizontal, vertical and magnitude sum of both components, for each source image - to the edge-kernel/ directory.
+
+Default input file - flower.jpg. Optional filename argument. Press any key with any of the opencv windows selected to terminate program execution.
+
+Usage
+
+```
+$ python3 erge-kernel.py
+$ python3 edge-kernel.py flower.jpg
+```
+
+## Color
+
+
+## Hough
