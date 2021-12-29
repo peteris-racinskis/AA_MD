@@ -5,7 +5,7 @@ Homework assignments in image processing. Written in Python 3.8.5+, using opencv
 - matplotlib 3.4.3
 - numpy 1.21.4
 
-Working with color opens up a whole lot of new problems due to the complexity of conserving proper mappings between the various representation spaces so everything in this repository works on grayscale versions of the input image.
+Working with color creates a whole lot of new problems due to the complexity of conserving proper mappings between the various representation spaces so everything in this repository works on grayscale versions of the input image unless otherwise specified.
 
 ## Histogram
 Apply histogram smoothing to an 8-bit grayscale version of the image. Default image - flower.jpg, inclued. Saves the grayscale and smoothed versions of the image in bitmap format in the histogram/ directory, displays both images and their respective histograms. Close the histogram window to terminate execution.
@@ -67,7 +67,7 @@ $ python3 bilinear.py flower.jpg 2
 ## Wavelet
 Produces a Discrete Wavelet Transform of an 8-bit grayscale version of the image using Haar wavelets, applies hard and soft thresholding to the transform for denoising. Looking at the output images it is obvious that hard thresholding is not a feasible approach due to ringing, which is much reduced in the soft threshold case. For a practical implementation, a more complex thresholding approach should be used but soft thresholding was deemed sufficient for this homework application.
 
-Outputs a grayscale version of the original, the DWT normalized for small magnitude components to be visible, an inverse DWT without any thresholding and inverse DWTs with hard and soft thresholding to the wavelet/ directory. Optional argument - input file name. By default takes a version of the flower.jpg image with some RGB noise applied in GIMP flower-noise.jpg.
+Outputs a grayscale version of the original, the DWT normalized for small magnitude components to be visible, an inverse DWT without any thresholding and inverse DWTs with hard and soft thresholding to the wavelet/ directory. Optional argument - input file name. By default takes a version of the flower.jpg image with some RGB noise applied in GIMP - flower-noise.jpg.
 
 Press any key with any of the opencv windows selected to terminate program execution.
 
