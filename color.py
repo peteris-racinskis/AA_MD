@@ -21,7 +21,7 @@ def rgb_to_hsi(img: np.ndarray) -> np.ndarray:
             b_t = b[j][k]
             g_t = g[j][k]
             r_t = r[j][k]
-            h_t = acos(
+            h_t = np.arccos(
                 0.5 * (r_t - g_t + r_t - b_t) /
                 (sqrt(
                     (r_t - g_t) ** 2 +
@@ -45,6 +45,16 @@ def leave_one(img: np.ndarray, leave=3) -> np.ndarray:
     r = np.zeros(r.shape) if not leave == 3 else r
     res = np.dstack([b,g,r])
     return res.astype(np.uint8)
+
+# to check what order the colors are in
+def leave_two(img: np.ndarray, leave=3) -> np.ndarray:
+    b, g, r = [np.squeeze(x) for x in np.split(img, 3, axis=2)]
+    b = np.zeros(b.shape) if leave == 1 else b
+    g = np.zeros(g.shape) if leave == 2 else g
+    r = np.zeros(r.shape) if leave == 3 else r
+    res = np.dstack([b,g,r])
+    return res.astype(np.uint8)
+
 
 
 def proper_angle(radians):
@@ -97,7 +107,7 @@ def hsi_to_rgb(img: np.ndarray) -> np.ndarray:
             b[j][k], g[j][k], r[j][k] = l
     res = np.dstack([b,g,r])
     res = res * 255
-    res = res % 255
+    res = abs(res)
     return res.astype(np.uint8)
 
 
@@ -123,10 +133,15 @@ if __name__ == "__main__":
     b = leave_one(img, 1)
     g = leave_one(img, 2)
     r = leave_one(img, 3)
+    br = leave_two(img, 2)
+    hsi_b = rgb_to_hsi(br)
+    bgr_b = hsi_to_rgb(hsi_b)
     cv2.imshow("blue", b)
     cv2.imshow("green", g)
     cv2.imshow("red", r)
+    cv2.imshow("red", br)
     cv2.imshow("rev", bgr)
+    cv2.imshow("rev r", bgr_b)
     cv2.imshow("img", img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
