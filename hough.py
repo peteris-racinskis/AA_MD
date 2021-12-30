@@ -116,7 +116,7 @@ def cluster_centers(clusters: List[AbstractSet[Tuple]]) -> List[Tuple]:
         for x,y in cluster:
             xsum += x
             ysum += y
-        centers.append((xsum/n,ysum/n))
+        centers.append((xsum/n,ysum/n)) # this line was wrong and took me about 2 hours to find!
     return centers
 
 # really ugly but it does the trick - restore the original radius/theta,
