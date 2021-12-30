@@ -10,17 +10,19 @@ HI=255
 DC=127
 MAX_ITERS=100
 
-# generate the thinning hit-and-miss kernel set
-# taken from: https://homepages.inf.ed.ac.uk/rbf/HIPR2/thin.htm 
+# Generate the thinning hit-and-miss kernel set
+# Taken from: https://homepages.inf.ed.ac.uk/rbf/HIPR2/thin.htm 
+# Hit checking is done by setting the required match count. 
+# All don't care values set to ones that cannot appear in
+# the binary image.
 def kernels() -> List[np.ndarray]:
-    # each kernel has a required match count
     outcrop = np.asarray([[LO,LO,LO], [DC,HI,DC], [HI,HI,HI]]).astype(np.uint8)
     corner = np.asarray([[DC,LO,LO], [HI,HI,LO], [DC,HI,DC]]).astype(np.uint8)
     kernel_set = []
     for k in outcrop, corner:
         matches = [np.count_nonzero(k != DC)] * 4
         rotations = [k, k.T, np.flip(k, axis=0), np.flip(k, axis=1)]
-        kernel_set += [(rot, matches) for rot, matches in zip(rotations, matches)]
+        kernel_set += [(rot, match) for rot, match in zip(rotations, matches)]
     return kernel_set
 
 # image has to be binary with HI and LO values as specified above
