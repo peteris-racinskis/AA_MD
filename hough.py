@@ -6,11 +6,13 @@ from math import cos, sin, radians, sqrt
 from thinning import force_binary
 from fourier import pixels
 from typing import List, Tuple, AbstractSet
-FILENAME="hough-input.png"
+FILENAME="hough-input-interrupted.png"
 INF=99999999999
 DRAW_DELAY=0
 THRESHOLD=150
-CLUSTER_HALT=5
+CLUSTER_HALT_DIST=5
+NUM_CLUSTERS=1
+RESOLUTION=400
 LO=0
 HI=255
 DC=127
@@ -46,7 +48,7 @@ def restore(value, limit, bins):
 # so while the (0,...,360) transform is interesting to look at, it's
 # best to look at just half of it to find lines - each line will be
 # represented by 2 clusters otherwise.
-def hough_transform(img: np.ndarray, resolution = 200, full=False) -> np.ndarray:
+def hough_transform(img: np.ndarray, resolution=RESOLUTION, full=False) -> np.ndarray:
     n,m = img.shape
     r_limit = int(sqrt(n ** 2 + m ** 2)) + 1
     t_limit = 360 if full else 180
@@ -89,7 +91,7 @@ def hierarchical_cluster(img: np.ndarray) -> List[AbstractSet[Tuple]]:
         for j in range(m):
             if img[i][j] == HI:
                 clusters.append(set([(i,j)]))
-    while len(clusters) > 2:
+    while len(clusters) > NUM_CLUSTERS:
         distances = dict()
         for cluster in clusters:
             for remaining in clusters:
@@ -98,7 +100,7 @@ def hierarchical_cluster(img: np.ndarray) -> List[AbstractSet[Tuple]]:
                 distance = cluster_distance(cluster, remaining)
                 distances[distance] = (cluster, remaining)
         mindist = min(distances.keys())
-        if mindist > CLUSTER_HALT:
+        if mindist > CLUSTER_HALT_DIST:
             break
         A, B = distances[mindist]
         AB = A.union(B)

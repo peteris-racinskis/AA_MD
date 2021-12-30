@@ -110,7 +110,38 @@ $ python3 erge-kernel.py
 $ python3 edge-kernel.py flower.jpg
 ```
 
-## Color
+## Thinning
+Morphological thinning of a binary image. All non-zero values are forced to the maximum pixel value. Outputs the binarized version of the input image as well as the thinned image to the thinned/ directory. Console output logs the number of iterations required for convergence. 
 
+Optional argument - filename, default input file - thin-input.png, (a few random thick curves drawn with the brush tool in GIMP). To terminate program execution, press any key with any of the opencv windows selected.
+
+Usage
+
+```
+$ python3 thinning.py
+$ python3 thinning.py thin-input.png
+```
+Output when running with default parameters
+
+```
+Converged after 15 iterations
+```
 
 ## Hough
+Computes the hough transform of a binary input image, applies a threshold and uses hierarchical clusterization to find the top few clusters in radius-theta space. Termination conditions for clusterization - 2 clusters remaining or minimum inter-cluster distance greater than some threshold. These can be adjusted in the script itself. Outputs the binarized original, 180-degree view of the transform, 360-degree (mirrored, families of sinusioids converging at two theta values are formed by the same line) view of the transform, thresholded transform and the inferred lines drawn on top of the original image to the hough/ directory, which has been populated with some example outputs. 
+
+This is a very inefficient implementation since the radius for the line at each angle is computed by solving a system of linear equations, and in general no attempt has been made to avoid calling Python functions inside nested loops, so running it on images much larger than the ones provided as examples is discouraged. Computing the example output takes a few seconds on my machine, which is fairly powerful. 
+
+Absolutely no attempt has been made to optimize performance in this case, but it can be improved by reducing the "RESOLUTION" parameter at the top of the script (resulting in fewer angle values being checked at each point). The tradeoff for this is that the inferred lines are less accurate - 200 is good enough for some examples but results in an offset with others, while 400 is an improvement but results in longer runtimes (input-2 suffers from this at 200, whereas the example with input-2-interrupted was done at 400, eliminating the offset).
+
+To illustrate that this algorithm can work with distorted lines, input-3 and input-4 have been provided. With input-3 and NUM_CLUSTERS=2 one can see that a single strong line can dominate a weak one (the image is normalized before thresholding, which means very strong outputs from one line can push those from another below the threshold). With input-4 one can see that (having set NUM_CLUSTERS=1 to produce just 1 line) the weak line (produced by drawing a line by hand and deleting segments) can still be detected by this algorithm.
+
+Optional argument - filename. Default input file - hough-input-interrupted.png. Press any key with any of the opencv windows selected to terminate program execution.
+
+Usage
+
+```
+$ python3 hough.py
+$ python3 hough.py hough-input-interrupted.png
+```
+
