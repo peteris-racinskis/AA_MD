@@ -99,7 +99,9 @@ Size of compressed predictive w/t loss: 7689
 ```
 
 ## Edge-kernel
-Implement convolution for an 8-bit grayscale version of the image with the Laplace and Sobel kernels for edge detection purposes. Apply Gaussian blur to the original image before edge detection to illustrate the differences between the original and blurred version. Outputs the grayscale original, blurred version, both outputs after convolution with the Laplace kernel and all outputs after convolution with the Sobel kernels - horizontal, vertical and magnitude sum of both components, for each source image - to the edge-kernel/ directory.
+Implement convolution for an 8-bit grayscale version of the image with the Laplace and Sobel kernels for edge detection purposes. Apply Gaussian blur to the original image before edge detection to illustrate the differences between the original and blurred version. Convolve both versions of the image with each of the kernels, normalize results to illustrate kernel effects. Implement threshold edge detection on the outputs of CV2's Laplacian operator and both the Laplace and Sobel operators written here. Outputs the grayscale original, all normalized convolutions and edge detection results to the edge-kernel/ directory. 
+
+Note: most practical implementations of the Laplacian operator seem to use a Gaussian-Laplacian combined kernel, but a similar effect is obtained here by blurring the image first.
 
 Default input file - flower.jpg. Optional filename argument. Press any key with any of the opencv windows selected to terminate program execution.
 

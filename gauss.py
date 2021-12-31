@@ -55,9 +55,10 @@ def gauss_blur_slow(img: np.ndarray, kernel: np.ndarray) -> np.ndarray:
 
 # for comparison, how much faster is the opencv implementation?
 # roughly 1000x
-def gauss_blur_fast(img, kernel=None) -> np.ndarray:
+def gauss_blur_fast(img, kernel=None, radius=-1) -> np.ndarray:
     if kernel is None:
-        kernel = generate_kernel(3, 1)
+        radius = 3 if radius == -1 else radius
+        kernel = generate_kernel(radius, radius / 3)
     return cv2.filter2D(img,-1,kernel)
 
 if __name__ == "__main__":
